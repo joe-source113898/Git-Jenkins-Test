@@ -5,7 +5,6 @@ from datetime import datetime
 from data_entry import get_amount, get_category, get_date, get_description
 import matplotlib.pyplot as plt
 
-
 class CSV:
     CSV_FILE = "finance_data.csv"
     COLUMNS = ["Date", "Amount", "Category", "Description"]
@@ -57,7 +56,6 @@ class CSV:
 
         return filtered_df
 
-
 def add():
     CSV.initialize_csv()
     date = get_date("Enter the date of the transaction (dd-mm-yyyy) or enter for today's date: ", allow_default=True)
@@ -65,7 +63,6 @@ def add():
     category = get_category()
     description = get_description()
     CSV.add_entry(date, amount, category, description)
-
 
 def plot_transactions(df):
     df.set_index("Date", inplace=True)
@@ -83,14 +80,13 @@ def plot_transactions(df):
     plt.grid(True)
     plt.show()
 
-
-def main(action, start_date=None, end_date=None):
+def main(action, start_date=None, end_date=None, auto_plot=False):
     if action == "add":
         add()
     elif action == "view":
         if start_date and end_date:
             df = CSV.get_transactions(start_date, end_date)
-            if input("Do you want to plot the transactions (y/n)? ").lower() == "y":
+            if auto_plot or input("Do you want to plot the transactions (y/n)? ").lower() == "y":
                 plot_transactions(df)
         else:
             print("Please provide both start_date and end_date for viewing transactions.")
@@ -99,12 +95,12 @@ def main(action, start_date=None, end_date=None):
     else:
         print("Invalid action. Please choose 'add', 'view', or 'exit'.")
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Finance management script.")
     parser.add_argument("action", choices=["add", "view", "exit"], help="Action to perform: 'add', 'view', or 'exit'")
     parser.add_argument("--start_date", help="Start date for viewing transactions (dd-mm-yyyy)")
     parser.add_argument("--end_date", help="End date for viewing transactions (dd-mm-yyyy)")
+    parser.add_argument("--auto_plot", action="store_true", help="Automatically plot transactions without asking")
 
     args = parser.parse_args()
-    main(args.action, args.start_date, args.end_date)
+    main(args.action, args.start_date, args.end_date, args.auto_plot)
